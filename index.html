@@ -351,11 +351,11 @@
     </div>
 
     <div class="cfg-group">
-      <h3>Ampollas de Soletrol · verificar en la etiqueta</h3>
-      <p class="hint" style="margin-top:-4px;">mEq que aporta CADA ampolla. Confírmalo con el envase que usas; de aquí sale el número de ampollas.</p>
+      <h3>Ampollas de Soletrol · escribe tu presentación</h3>
+      <p class="hint" style="margin-top:-4px;">Escribe los mEq que aporta CADA ampolla de la presentación que tengas disponible. De aquí sale el número de ampollas. Por defecto: Na 34 mEq/10 mL · K 20 mEq/10 mL.</p>
       <div class="row2">
-        <label class="field"><span class="lbl">Soletrol Na · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampNa" step="0.1"><span class="unit">mEq</span></div></label>
-        <label class="field"><span class="lbl">Soletrol K · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampK" step="0.1"><span class="unit">mEq</span></div></label>
+        <label class="field"><span class="lbl">Soletrol Na · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampNa" step="0.1" placeholder="34"><span class="unit">mEq</span></div></label>
+        <label class="field"><span class="lbl">Soletrol K · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampK" step="0.1" placeholder="20"><span class="unit">mEq</span></div></label>
       </div>
     </div>
 
@@ -375,7 +375,7 @@ const CFG_DEFAULTS = {
   naHipoWarn:8,  naHipoDanger:10, sshConc:513,
   naHiperWarn:10, naHiperDanger:12,
   kPerifRate:10, kPerifConc:40, kCentralRate:20, kCentralConc:80,
-  ampNa:34, ampK:13.4
+  ampNa:34, ampK:20
 };
 const CFG_KEY = 'nak-cfg-v1';
 const CFG_IDS = Object.keys(CFG_DEFAULTS);
