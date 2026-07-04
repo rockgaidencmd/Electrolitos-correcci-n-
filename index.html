@@ -309,6 +309,13 @@
       <div class="pval"><span class="num" id="k1-mlh">--.-</span><span class="unit">mL/h</span></div>
     </div>
     <div class="results" id="k1-results"></div>
+    <span class="lbl" style="display:block;margin:16px 0 5px;">Preparar la mezcla en bolsa de (base SF 0,9%)</span>
+    <div class="toggle" id="k1-bag">
+      <button data-color="amber" class="active" data-val="100">100 mL</button>
+      <button data-color="amber" data-val="250">250 mL</button>
+      <button data-color="amber" data-val="500">500 mL</button>
+    </div>
+    <div class="results" id="k1-prep"></div>
     <div id="k1-alerts"></div>
   </section>
 
@@ -550,6 +557,7 @@ document.getElementById('na2-mayor65').addEventListener('change', calcHiperNa);
 
 // ================= Hipopotasemia =================
 const getRuta = wireToggle('k1-ruta', ()=>calcHipoK());
+const getBagK = wireToggle('k1-bag', ()=>calcHipoK());
 function calcHipoK(){
   const K0 = parseFloat(document.getElementById('k1-actual').value);
   const Kobj = parseFloat(document.getElementById('k1-objetivo').value);
@@ -566,7 +574,7 @@ function calcHipoK(){
   limiteEl.textContent = 'Límite para vía '+(ruta==='periferica'?'periférica':'central')+': máx. '+limites.maxRate+' mEq/h · máx. '+limites.maxConc+' mEq/L';
   const deltaK = (K0 && Kobj) ? (Kobj - K0) : null;   // cuánto hay que subir
   goalEl.innerHTML = (deltaK!=null && deltaK>0) ? goalHtml('Corregir K⁺', signed(deltaK,1)+' mEq/L') : '';
-  if(!conc||!rate){ document.getElementById('k1-mlh').textContent='--.-'; resultsEl.innerHTML=''; alertsEl.innerHTML=''; return; }
+  if(!conc||!rate){ document.getElementById('k1-mlh').textContent='--.-'; resultsEl.innerHTML=''; alertsEl.innerHTML=''; document.getElementById('k1-prep').innerHTML=''; return; }
   const rateMlH = (rate/conc)*1000;
   // Regla práctica: ~100 mEq de KCl por cada 0,3 mEq/L a subir.
   const deficit = (deltaK!=null && deltaK>0) ? (deltaK/0.3)*100 : null;
@@ -577,11 +585,25 @@ function calcHipoK(){
   res += rrow('Velocidad de infusión', fmt(rateMlH)+' mL/h');
   if(deficit!=null){
     res += rrow('Déficit corporal estimado (regla práctica)', '≈ '+fmt(deficit,0)+' mEq de KCl');
-    const ampK = ampollas(deficit, cfg.ampK);
-    if(ampK){ res += rrow('Ampollas de Soletrol K ('+fmt(cfg.ampK,1)+' mEq c/u)', '≈ '+ampK.enteras+' amp · '+fmt(ampK.enteras*cfg.mlK,0)+' mL ('+fmt(ampK.exacto,1)+' amp)'); }
     res += rrow('Tiempo estimado para reponer el déficit', '≈ '+fmt(horasDeficit)+' h');
   }
   resultsEl.innerHTML = res;
+
+  // Preparación de la mezcla agregando Soletrol K a suero fisiológico 0,9%
+  const bagVk = parseFloat(getBagK());
+  const MaK = cfg.ampK, VaK = cfg.mlK;            // 20 mEq / 10 mL por defecto
+  const prepK = document.getElementById('k1-prep');
+  const denomK = 1000*MaK - conc*VaK;
+  if(bagVk && conc && denomK>0){
+    const nK = conc*bagVk/denomK;                 // ampollas para alcanzar 'conc' contabilizando el volumen añadido
+    const mlK = nK*VaK, meqK = MaK*nK, volFinalK = bagVk + mlK;
+    const duraK = rateMlH>0 ? volFinalK/rateMlH : null;
+    prepK.innerHTML =
+      rrow('Agregar a la bolsa de '+fmt(bagVk,0)+' mL', '≈ '+fmt(meqK,1)+' mEq de K ('+fmt(nK,1)+' amp · '+fmt(mlK,1)+' mL)') +
+      rrow('Concentración resultante', fmt(conc,0)+' mEq/L') +
+      rrow('Volumen final de la bolsa', fmt(volFinalK,0)+' mL'+(duraK?' · dura ≈ '+fmt(duraK)+' h':''));
+  } else { prepK.innerHTML=''; }
+
   let a='';
   if(deltaK!=null && deltaK<=0){ a += alertHtml('warning','El K⁺ objetivo no es mayor que el actual: no hay déficit que reponer con estos valores.'); }
   if(rate>limites.maxRate){ a += alertHtml('danger','La velocidad seleccionada ('+rate+' mEq/h) supera el máximo seguro para vía '+(ruta==='periferica'?'periférica':'central')+' ('+limites.maxRate+' mEq/h). Riesgo de arritmia.'); }
