@@ -1,10 +1,20 @@
-const CACHE_NAME = "nak-electrolitos-v9";
+const CACHE_NAME = "nak-electrolitos-v10";
 const ASSETS = [
   "./",
   "./index.html",
+  "./activacion.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
+];
+
+// Orígenes que NUNCA deben pasar por caché (activación con Firebase).
+const BYPASS = [
+  "firestore.googleapis.com",
+  "firebase.googleapis.com",
+  "identitytoolkit.googleapis.com",
+  "securetoken.googleapis.com",
+  "www.gstatic.com",
 ];
 
 self.addEventListener("install", (event) => {
@@ -31,6 +41,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
+
+  // Firebase / Firestore: dejar pasar directo a la red (sin caché).
+  const host = new URL(req.url).hostname;
+  if (BYPASS.some((h) => host.includes(h))) return;
 
   const isDoc = req.mode === "navigate" ||
     (req.destination === "document") ||
