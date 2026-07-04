@@ -350,6 +350,15 @@
       </div>
     </div>
 
+    <div class="cfg-group">
+      <h3>Ampollas de Soletrol · verificar en la etiqueta</h3>
+      <p class="hint" style="margin-top:-4px;">mEq que aporta CADA ampolla. Confírmalo con el envase que usas; de aquí sale el número de ampollas.</p>
+      <div class="row2">
+        <label class="field"><span class="lbl">Soletrol Na · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampNa" step="0.1"><span class="unit">mEq</span></div></label>
+        <label class="field"><span class="lbl">Soletrol K · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampK" step="0.1"><span class="unit">mEq</span></div></label>
+      </div>
+    </div>
+
     <div class="cfg-actions">
       <button class="btn ghost" id="reset-settings">Restaurar</button>
       <button class="btn primary" id="save-settings">Guardar</button>
@@ -365,7 +374,8 @@ const ALERT_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="1
 const CFG_DEFAULTS = {
   naHipoWarn:8,  naHipoDanger:10, sshConc:513,
   naHiperWarn:10, naHiperDanger:12,
-  kPerifRate:10, kPerifConc:40, kCentralRate:20, kCentralConc:80
+  kPerifRate:10, kPerifConc:40, kCentralRate:20, kCentralConc:80,
+  ampNa:34, ampK:13.4
 };
 const CFG_KEY = 'nak-cfg-v1';
 const CFG_IDS = Object.keys(CFG_DEFAULTS);
@@ -386,6 +396,11 @@ function factorATC(sexo, mayor65){
 function fmt(n, d=1){ return Number.isFinite(n) ? n.toFixed(d) : '--.-'; }
 function signed(n, d=1){ return (n>0?'+':'') + fmt(n,d); }
 function goalHtml(lbl, val){ return '<span class="g-lbl">'+lbl+'</span><span class="g-val">'+val+'</span>'; }
+function ampollas(totalMeq, meqPorAmp){
+  if(!Number.isFinite(totalMeq) || !meqPorAmp) return null;
+  const exacto = totalMeq/meqPorAmp;
+  return { exacto, enteras: Math.ceil(exacto - 1e-9) };
+}
 
 // ---- Tabs ----
 document.querySelectorAll('.tab').forEach(btn=>{
@@ -438,6 +453,8 @@ function calcHipoNa(){
   const rate = volMl/h;
   const ritmoHora = deltaTotal/h;          // mEq/L por hora
   const correccion24h = deltaTotal*(24/h);
+  const naTotalMeq = (volMl/1000)*cfg.sshConc;   // Na⁺ contenido en el volumen a infundir
+  const ampNa = ampollas(naTotalMeq, cfg.ampNa);
   document.getElementById('na1-rate').textContent = fmt(rate);
   resultsEl.innerHTML =
     rrow('Corrección total necesaria', signed(deltaTotal)+' mEq/L') +
@@ -445,6 +462,8 @@ function calcHipoNa(){
     rrow('Agua corporal total (ACT)', fmt(ACT)+' L') +
     rrow('Δ Na⁺ por litro de SSH 3%', fmt(deltaPorLitro,2)+' mEq/L') +
     rrow('Volumen total a infundir', fmt(volMl,0)+' mL') +
+    rrow('Na⁺ total en el volumen', fmt(naTotalMeq,0)+' mEq') +
+    (ampNa ? rrow('Ampollas de Soletrol Na ('+fmt(cfg.ampNa,0)+' mEq c/u)', '≈ '+ampNa.enteras+' amp ('+fmt(ampNa.exacto,1)+')') : '') +
     rrow('Corrección proyectada a 24 h', fmt(correccion24h)+' mEq/L');
   let a='';
   if(correccion24h>cfg.naHipoDanger){ a += alertHtml('danger','La corrección proyectada supera '+cfg.naHipoDanger+' mEq/L en 24 h. Riesgo de síndrome de desmielinización osmótica. Reduzca la velocidad o el Na⁺ objetivo.'); }
@@ -528,6 +547,8 @@ function calcHipoK(){
   res += rrow('Velocidad de infusión', fmt(rateMlH)+' mL/h');
   if(deficit!=null){
     res += rrow('Déficit corporal estimado (regla práctica)', '≈ '+fmt(deficit,0)+' mEq de KCl');
+    const ampK = ampollas(deficit, cfg.ampK);
+    if(ampK){ res += rrow('Ampollas de Soletrol K ('+fmt(cfg.ampK,1)+' mEq c/u)', '≈ '+ampK.enteras+' amp ('+fmt(ampK.exacto,1)+')'); }
     res += rrow('Tiempo estimado para reponer el déficit', '≈ '+fmt(horasDeficit)+' h');
   }
   resultsEl.innerHTML = res;

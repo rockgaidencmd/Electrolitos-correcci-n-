@@ -1,4 +1,4 @@
-const CACHE_NAME = "nak-electrolitos-v3";
+const CACHE_NAME = "nak-electrolitos-v4";
 const ASSETS = [
   "./",
   "./index.html",
