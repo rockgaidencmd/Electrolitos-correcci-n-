@@ -352,10 +352,14 @@
 
     <div class="cfg-group">
       <h3>Ampollas de Soletrol · escribe tu presentación</h3>
-      <p class="hint" style="margin-top:-4px;">Escribe los mEq que aporta CADA ampolla de la presentación que tengas disponible. De aquí sale el número de ampollas. Por defecto: Na 34 mEq/10 mL · K 20 mEq/10 mL.</p>
+      <p class="hint" style="margin-top:-4px;">Escribe la presentación que tengas disponible (mEq y mL por ampolla). De aquí salen el número de ampollas y los mL de concentrado. Por defecto: Na 34 mEq/10 mL · K 20 mEq/10 mL.</p>
       <div class="row2">
-        <label class="field"><span class="lbl">Soletrol Na · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampNa" step="0.1" placeholder="34"><span class="unit">mEq</span></div></label>
-        <label class="field"><span class="lbl">Soletrol K · por ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampK" step="0.1" placeholder="20"><span class="unit">mEq</span></div></label>
+        <label class="field"><span class="lbl">Soletrol Na · mEq / ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampNa" step="0.1" placeholder="34"><span class="unit">mEq</span></div></label>
+        <label class="field"><span class="lbl">Soletrol Na · mL / ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-mlNa" step="0.5" placeholder="10"><span class="unit">mL</span></div></label>
+      </div>
+      <div class="row2">
+        <label class="field"><span class="lbl">Soletrol K · mEq / ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-ampK" step="0.1" placeholder="20"><span class="unit">mEq</span></div></label>
+        <label class="field"><span class="lbl">Soletrol K · mL / ampolla</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-mlK" step="0.5" placeholder="10"><span class="unit">mL</span></div></label>
       </div>
     </div>
 
@@ -375,7 +379,7 @@ const CFG_DEFAULTS = {
   naHipoWarn:8,  naHipoDanger:10, sshConc:513,
   naHiperWarn:10, naHiperDanger:12,
   kPerifRate:10, kPerifConc:40, kCentralRate:20, kCentralConc:80,
-  ampNa:34, ampK:20
+  ampNa:34, mlNa:10, ampK:20, mlK:10
 };
 const CFG_KEY = 'nak-cfg-v1';
 const CFG_IDS = Object.keys(CFG_DEFAULTS);
@@ -463,7 +467,7 @@ function calcHipoNa(){
     rrow('Δ Na⁺ por litro de SSH 3%', fmt(deltaPorLitro,2)+' mEq/L') +
     rrow('Volumen total a infundir', fmt(volMl,0)+' mL') +
     rrow('Na⁺ total en el volumen', fmt(naTotalMeq,0)+' mEq') +
-    (ampNa ? rrow('Ampollas de Soletrol Na ('+fmt(cfg.ampNa,0)+' mEq c/u)', '≈ '+ampNa.enteras+' amp ('+fmt(ampNa.exacto,1)+')') : '') +
+    (ampNa ? rrow('Ampollas de Soletrol Na ('+fmt(cfg.ampNa,0)+' mEq c/u)', '≈ '+ampNa.enteras+' amp · '+fmt(ampNa.enteras*cfg.mlNa,0)+' mL ('+fmt(ampNa.exacto,1)+' amp)') : '') +
     rrow('Corrección proyectada a 24 h', fmt(correccion24h)+' mEq/L');
   let a='';
   if(correccion24h>cfg.naHipoDanger){ a += alertHtml('danger','La corrección proyectada supera '+cfg.naHipoDanger+' mEq/L en 24 h. Riesgo de síndrome de desmielinización osmótica. Reduzca la velocidad o el Na⁺ objetivo.'); }
@@ -548,7 +552,7 @@ function calcHipoK(){
   if(deficit!=null){
     res += rrow('Déficit corporal estimado (regla práctica)', '≈ '+fmt(deficit,0)+' mEq de KCl');
     const ampK = ampollas(deficit, cfg.ampK);
-    if(ampK){ res += rrow('Ampollas de Soletrol K ('+fmt(cfg.ampK,1)+' mEq c/u)', '≈ '+ampK.enteras+' amp ('+fmt(ampK.exacto,1)+')'); }
+    if(ampK){ res += rrow('Ampollas de Soletrol K ('+fmt(cfg.ampK,1)+' mEq c/u)', '≈ '+ampK.enteras+' amp · '+fmt(ampK.enteras*cfg.mlK,0)+' mL ('+fmt(ampK.exacto,1)+' amp)'); }
     res += rrow('Tiempo estimado para reponer el déficit', '≈ '+fmt(horasDeficit)+' h');
   }
   resultsEl.innerHTML = res;
