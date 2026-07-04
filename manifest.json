@@ -1,25 +1,25 @@
 {
-  "name": "Corrección de Sodio y Potasio",
-  "short_name": "Na⁺/K⁺",
-  "description": "Calculadora de infusión para corrección de sodio y potasio",
+  "name": "MS-Electrolitos",
+  "short_name": "MS-Electrolitos",
+  "description": "Calculadora de infusión para corrección de sodio y potasio · MediShort 360",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F3F1EC",
-  "theme_color": "#0F6B72",
+  "background_color": "#141018",
+  "theme_color": "#141018",
   "orientation": "portrait",
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
