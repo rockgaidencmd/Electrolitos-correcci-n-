@@ -84,19 +84,19 @@
 
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-  label.field{display:block;margin-bottom:14px;}
+  label.field{display:block;margin-bottom:14px;min-width:0;}
   label.field .lbl{
     display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;
     color:var(--ink-soft);margin-bottom:5px;font-weight:600;
   }
-  .field-input{display:flex;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);}
+  .field-input{display:flex;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);min-width:0;}
   .field-input input{
-    border:none;outline:none;padding:10px 12px;font-size:15px;width:100%;
-    font-family:inherit;color:var(--ink);background:#fff;
+    border:none;outline:none;padding:10px 10px;font-size:16px;width:100%;min-width:0;
+    font-family:inherit;color:var(--ink);background:#fff;text-align:right;
   }
   .field-input .unit{
-    background:#F4F2ED;padding:10px 12px;font-size:13px;color:var(--ink-soft);
-    display:flex;align-items:center;white-space:nowrap;
+    background:#F4F2ED;padding:10px 10px;font-size:12.5px;color:var(--ink-soft);
+    display:flex;align-items:center;white-space:nowrap;flex-shrink:0;
   }
 
   .toggle{display:flex;gap:8px;margin-bottom:14px;}
@@ -122,9 +122,17 @@
   .pump .pval .unit{font-size:16px;color:#7FA89A;}
 
   .results{margin-top:16px;}
-  .rrow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .rrow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
   .rrow .k{color:var(--ink-soft);}
-  .rrow .v{font-weight:700;}
+  .rrow .v{font-weight:700;text-align:right;}
+  .goal{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--teal-soft);border-radius:14px;padding:12px 14px;margin-top:14px;
+  }
+  .goal .g-lbl{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);font-weight:700;}
+  .goal .g-val{font-size:18px;font-weight:800;color:var(--teal);text-align:right;}
+  .goal.blue{background:var(--blue-soft);} .goal.blue .g-lbl,.goal.blue .g-val{color:var(--blue);}
+  .goal.amber{background:var(--amber-soft);} .goal.amber .g-lbl,.goal.amber .g-val{color:var(--amber);}
 
   .alert{
     display:flex;gap:10px;padding:12px 14px;border-radius:14px;margin-top:10px;font-size:13.5px;line-height:1.4;
@@ -184,11 +192,12 @@
       </div>
     </div>
     <label class="check"><input type="checkbox" id="na1-mayor65"> Mayor de 65 años</label>
-    <div class="row3">
-      <label class="field"><span class="lbl">Na⁺ actual</span><div class="field-input"><input type="number" id="na1-actual" value="118"><span class="unit">mEq/L</span></div></label>
-      <label class="field"><span class="lbl">Na⁺ objetivo</span><div class="field-input"><input type="number" id="na1-objetivo" value="128"><span class="unit">mEq/L</span></div></label>
-      <label class="field"><span class="lbl">Tiempo</span><div class="field-input"><input type="number" id="na1-horas" value="24" step="1"><span class="unit">h</span></div></label>
+    <div class="row2">
+      <label class="field"><span class="lbl">Na⁺ actual</span><div class="field-input"><input type="number" inputmode="decimal" id="na1-actual" value="118"><span class="unit">mEq/L</span></div></label>
+      <label class="field"><span class="lbl">Na⁺ objetivo</span><div class="field-input"><input type="number" inputmode="decimal" id="na1-objetivo" value="128"><span class="unit">mEq/L</span></div></label>
     </div>
+    <label class="field"><span class="lbl">Tiempo de corrección</span><div class="field-input"><input type="number" inputmode="decimal" id="na1-horas" value="24" step="1"><span class="unit">horas</span></div></label>
+    <div class="goal" id="na1-goal"></div>
     <div class="pump">
       <div class="plabel">SSH 3% · velocidad de infusión</div>
       <div class="pval"><span class="num" id="na1-rate">--.-</span><span class="unit">mL/h</span></div>
@@ -214,11 +223,12 @@
       </div>
     </div>
     <label class="check"><input type="checkbox" id="na2-mayor65"> Mayor de 65 años</label>
-    <div class="row3">
-      <label class="field"><span class="lbl">Na⁺ actual</span><div class="field-input"><input type="number" id="na2-actual" value="160"><span class="unit">mEq/L</span></div></label>
-      <label class="field"><span class="lbl">Na⁺ objetivo</span><div class="field-input"><input type="number" id="na2-objetivo" value="145"><span class="unit">mEq/L</span></div></label>
-      <label class="field"><span class="lbl">Tiempo</span><div class="field-input"><input type="number" id="na2-horas" value="24" step="1"><span class="unit">h</span></div></label>
+    <div class="row2">
+      <label class="field"><span class="lbl">Na⁺ actual</span><div class="field-input"><input type="number" inputmode="decimal" id="na2-actual" value="160"><span class="unit">mEq/L</span></div></label>
+      <label class="field"><span class="lbl">Na⁺ objetivo</span><div class="field-input"><input type="number" inputmode="decimal" id="na2-objetivo" value="145"><span class="unit">mEq/L</span></div></label>
     </div>
+    <label class="field"><span class="lbl">Tiempo de corrección</span><div class="field-input"><input type="number" inputmode="decimal" id="na2-horas" value="24" step="1"><span class="unit">horas</span></div></label>
+    <div class="goal blue" id="na2-goal"></div>
     <div class="pump">
       <div class="plabel">Reposición de agua libre · velocidad</div>
       <div class="pval"><span class="num" id="na2-rate">--.-</span><span class="unit">mL/h</span></div>
@@ -230,17 +240,21 @@
   <!-- ===== PANEL: Hipopotasemia ===== -->
   <section class="panel" id="panel-hipoK">
     <p class="intro">Reposición de Potasio · KCl diluido en solución compatible</p>
-    <label class="field"><span class="lbl">K⁺ sérico actual</span><div class="field-input"><input type="number" id="k1-actual" value="2.8" step="0.1"><span class="unit">mEq/L</span></div></label>
+    <div class="row2">
+      <label class="field"><span class="lbl">K⁺ actual</span><div class="field-input"><input type="number" inputmode="decimal" id="k1-actual" value="2.8" step="0.1"><span class="unit">mEq/L</span></div></label>
+      <label class="field"><span class="lbl">K⁺ objetivo</span><div class="field-input"><input type="number" inputmode="decimal" id="k1-objetivo" value="4.0" step="0.1"><span class="unit">mEq/L</span></div></label>
+    </div>
     <span class="lbl" style="display:block;margin-bottom:5px;">Vía de acceso</span>
     <div class="toggle" id="k1-ruta">
       <button data-color="amber" class="active" data-val="periferica">Periférica</button>
       <button data-color="amber" data-val="central">Central + ECG</button>
     </div>
     <div class="row2">
-      <label class="field"><span class="lbl">Concentración mezcla</span><div class="field-input"><input type="number" id="k1-conc" value="40" step="1"><span class="unit">mEq/L</span></div></label>
-      <label class="field"><span class="lbl">Velocidad deseada</span><div class="field-input"><input type="number" id="k1-rate" value="10" step="1"><span class="unit">mEq/h</span></div></label>
+      <label class="field"><span class="lbl">Concentración mezcla</span><div class="field-input"><input type="number" inputmode="decimal" id="k1-conc" value="40" step="1"><span class="unit">mEq/L</span></div></label>
+      <label class="field"><span class="lbl">Velocidad deseada</span><div class="field-input"><input type="number" inputmode="decimal" id="k1-rate" value="10" step="1"><span class="unit">mEq/h</span></div></label>
     </div>
     <p class="hint" id="k1-limite"></p>
+    <div class="goal amber" id="k1-goal"></div>
     <div class="pump">
       <div class="plabel">Velocidad de infusión</div>
       <div class="pval"><span class="num" id="k1-mlh">--.-</span><span class="unit">mL/h</span></div>
@@ -268,6 +282,8 @@ function factorATC(sexo, mayor65){
   return mayor65 ? 0.45 : 0.5;
 }
 function fmt(n, d=1){ return Number.isFinite(n) ? n.toFixed(d) : '--.-'; }
+function signed(n, d=1){ return (n>0?'+':'') + fmt(n,d); }
+function goalHtml(lbl, val){ return '<span class="g-lbl">'+lbl+'</span><span class="g-val">'+val+'</span>'; }
 
 // ---- Tabs ----
 document.querySelectorAll('.tab').forEach(btn=>{
@@ -303,16 +319,27 @@ function calcHipoNa(){
   const h = parseFloat(document.getElementById('na1-horas').value);
   const resultsEl = document.getElementById('na1-results');
   const alertsEl = document.getElementById('na1-alerts');
-  if(!P||!Na0||!Nat||!h){ document.getElementById('na1-rate').textContent='--.-'; resultsEl.innerHTML=''; alertsEl.innerHTML=''; return; }
+  const goalEl = document.getElementById('na1-goal');
+  if(!P||!Na0||!Nat||!h){ document.getElementById('na1-rate').textContent='--.-'; resultsEl.innerHTML=''; alertsEl.innerHTML=''; goalEl.innerHTML=''; return; }
+  const deltaTotal = Nat - Na0;            // cuánto hay que corregir (mEq/L)
+  goalEl.innerHTML = goalHtml('Corregir Na⁺', signed(deltaTotal)+' mEq/L');
+  if(deltaTotal<=0){
+    document.getElementById('na1-rate').textContent='--.-'; resultsEl.innerHTML='';
+    alertsEl.innerHTML = alertHtml('danger','El Na⁺ objetivo debe ser MAYOR que el actual para corregir una hiponatremia. Revise los valores.');
+    return;
+  }
   const f = factorATC(sexo, mayor65);
   const ACT = P*f;
   const deltaPorLitro = (513 - Na0)/(ACT+1);
-  const litros = (Nat - Na0)/deltaPorLitro;
+  const litros = deltaTotal/deltaPorLitro;
   const volMl = litros*1000;
   const rate = volMl/h;
-  const correccion24h = (Nat-Na0)*(24/h);
+  const ritmoHora = deltaTotal/h;          // mEq/L por hora
+  const correccion24h = deltaTotal*(24/h);
   document.getElementById('na1-rate').textContent = fmt(rate);
   resultsEl.innerHTML =
+    rrow('Corrección total necesaria', signed(deltaTotal)+' mEq/L') +
+    rrow('Ritmo de corrección', fmt(ritmoHora,2)+' mEq/L · h') +
     rrow('Agua corporal total (ACT)', fmt(ACT)+' L') +
     rrow('Δ Na⁺ por litro de SSH 3%', fmt(deltaPorLitro,2)+' mEq/L') +
     rrow('Volumen total a infundir', fmt(volMl,0)+' mL') +
@@ -337,15 +364,26 @@ function calcHiperNa(){
   const h = parseFloat(document.getElementById('na2-horas').value);
   const resultsEl = document.getElementById('na2-results');
   const alertsEl = document.getElementById('na2-alerts');
-  if(!P||!Na0||!Nat||!h){ document.getElementById('na2-rate').textContent='--.-'; resultsEl.innerHTML=''; alertsEl.innerHTML=''; return; }
+  const goalEl = document.getElementById('na2-goal');
+  if(!P||!Na0||!Nat||!h){ document.getElementById('na2-rate').textContent='--.-'; resultsEl.innerHTML=''; alertsEl.innerHTML=''; goalEl.innerHTML=''; return; }
+  const deltaTotal = Na0 - Nat;            // cuánto hay que bajar (mEq/L)
+  goalEl.innerHTML = goalHtml('Descender Na⁺', '−'+fmt(deltaTotal)+' mEq/L');
+  if(deltaTotal<=0){
+    document.getElementById('na2-rate').textContent='--.-'; resultsEl.innerHTML='';
+    alertsEl.innerHTML = alertHtml('danger','El Na⁺ objetivo debe ser MENOR que el actual para corregir una hipernatremia. Revise los valores.');
+    return;
+  }
   const f = factorATC(sexo, mayor65);
   const ACT = P*f;
   const dal = ACT*(Na0/Nat - 1);
   const volMl = dal*1000;
   const rate = volMl/h;
-  const correccion24h = (Na0-Nat)*(24/h);
+  const ritmoHora = deltaTotal/h;
+  const correccion24h = deltaTotal*(24/h);
   document.getElementById('na2-rate').textContent = fmt(rate);
   resultsEl.innerHTML =
+    rrow('Descenso total necesario', '−'+fmt(deltaTotal)+' mEq/L') +
+    rrow('Ritmo de descenso', fmt(ritmoHora,2)+' mEq/L · h') +
     rrow('Agua corporal total (ACT)', fmt(ACT)+' L') +
     rrow('Déficit de agua libre (DAL)', fmt(dal,2)+' L') +
     rrow('Volumen total a infundir', fmt(volMl,0)+' mL') +
@@ -363,33 +401,41 @@ document.getElementById('na2-mayor65').addEventListener('change', calcHiperNa);
 const getRuta = wireToggle('k1-ruta', ()=>calcHipoK());
 function calcHipoK(){
   const K0 = parseFloat(document.getElementById('k1-actual').value);
+  const Kobj = parseFloat(document.getElementById('k1-objetivo').value);
   const ruta = getRuta();
   const conc = parseFloat(document.getElementById('k1-conc').value);
   const rate = parseFloat(document.getElementById('k1-rate').value);
   const resultsEl = document.getElementById('k1-results');
   const alertsEl = document.getElementById('k1-alerts');
+  const goalEl = document.getElementById('k1-goal');
   const limiteEl = document.getElementById('k1-limite');
   const limites = ruta==='periferica' ? {maxRate:10,maxConc:40} : {maxRate:20,maxConc:80};
   limiteEl.textContent = 'Límite para vía '+(ruta==='periferica'?'periférica':'central')+': máx. '+limites.maxRate+' mEq/h · máx. '+limites.maxConc+' mEq/L';
+  const deltaK = (K0 && Kobj) ? (Kobj - K0) : null;   // cuánto hay que subir
+  goalEl.innerHTML = (deltaK!=null && deltaK>0) ? goalHtml('Corregir K⁺', signed(deltaK,1)+' mEq/L') : '';
   if(!conc||!rate){ document.getElementById('k1-mlh').textContent='--.-'; resultsEl.innerHTML=''; alertsEl.innerHTML=''; return; }
   const rateMlH = (rate/conc)*1000;
-  const deficit = (K0 && K0<3.5) ? ((3.5-K0)/0.3)*100 : null;
+  // Regla práctica: ~100 mEq de KCl por cada 0,3 mEq/L a subir.
+  const deficit = (deltaK!=null && deltaK>0) ? (deltaK/0.3)*100 : null;
   const horasDeficit = deficit ? deficit/rate : null;
   document.getElementById('k1-mlh').textContent = fmt(rateMlH);
-  let res = rrow('Velocidad de infusión', fmt(rateMlH)+' mL/h');
+  let res = '';
+  if(deltaK!=null && deltaK>0){ res += rrow('K⁺ a corregir (de '+fmt(K0,1)+' a '+fmt(Kobj,1)+')', signed(deltaK,1)+' mEq/L'); }
+  res += rrow('Velocidad de infusión', fmt(rateMlH)+' mL/h');
   if(deficit!=null){
-    res += rrow('Déficit corporal estimado (regla práctica)', '≈ '+fmt(deficit,0)+' mEq');
+    res += rrow('Déficit corporal estimado (regla práctica)', '≈ '+fmt(deficit,0)+' mEq de KCl');
     res += rrow('Tiempo estimado para reponer el déficit', '≈ '+fmt(horasDeficit)+' h');
   }
   resultsEl.innerHTML = res;
   let a='';
+  if(deltaK!=null && deltaK<=0){ a += alertHtml('warning','El K⁺ objetivo no es mayor que el actual: no hay déficit que reponer con estos valores.'); }
   if(rate>limites.maxRate){ a += alertHtml('danger','La velocidad seleccionada ('+rate+' mEq/h) supera el máximo seguro para vía '+(ruta==='periferica'?'periférica':'central')+' ('+limites.maxRate+' mEq/h). Riesgo de arritmia.'); }
   if(conc>limites.maxConc){ a += alertHtml('danger','La concentración ('+conc+' mEq/L) supera el máximo para esta vía ('+limites.maxConc+' mEq/L). Riesgo de flebitis / arritmia.'); }
   if(ruta==='central'){ a += alertHtml('warning','Vía central: exige monitorización electrocardiográfica continua durante toda la infusión.'); }
   if(deficit!=null){ a += alertHtml('warning','El déficit es una estimación práctica; no sustituye el control seriado de K⁺ sérico.'); }
   alertsEl.innerHTML = a;
 }
-['k1-actual','k1-conc','k1-rate'].forEach(id=>document.getElementById(id).addEventListener('input', calcHipoK));
+['k1-actual','k1-objetivo','k1-conc','k1-rate'].forEach(id=>document.getElementById(id).addEventListener('input', calcHipoK));
 
 // initial compute
 calcHipoNa(); calcHiperNa(); calcHipoK();
