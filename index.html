@@ -245,6 +245,13 @@
       <div class="pval"><span class="num" id="na1-rate">--.-</span><span class="unit">mL/h</span></div>
     </div>
     <div class="results" id="na1-results"></div>
+    <span class="lbl" style="display:block;margin:16px 0 5px;">Preparar la SSH 3% en bolsa de (base SF 0,9%)</span>
+    <div class="toggle" id="na1-bag">
+      <button data-color="teal" data-val="250">250 mL</button>
+      <button data-color="teal" class="active" data-val="500">500 mL</button>
+      <button data-color="teal" data-val="1000">1000 mL</button>
+    </div>
+    <div class="results" id="na1-prep"></div>
     <div id="na1-alerts"></div>
   </section>
 
@@ -431,6 +438,7 @@ function wireToggle(id, cb){
 
 // ================= Hiponatremia =================
 const getSexo1 = wireToggle('na1-sexo', ()=>calcHipoNa());
+const getBag1 = wireToggle('na1-bag', ()=>calcHipoNa());
 function calcHipoNa(){
   const P = parseFloat(document.getElementById('na1-peso').value);
   const sexo = getSexo1();
@@ -458,7 +466,6 @@ function calcHipoNa(){
   const ritmoHora = deltaTotal/h;          // mEq/L por hora
   const correccion24h = deltaTotal*(24/h);
   const naTotalMeq = (volMl/1000)*cfg.sshConc;   // Na⁺ contenido en el volumen a infundir
-  const ampNa = ampollas(naTotalMeq, cfg.ampNa);
   document.getElementById('na1-rate').textContent = fmt(rate);
   resultsEl.innerHTML =
     rrow('Corrección total necesaria', signed(deltaTotal)+' mEq/L') +
@@ -467,8 +474,27 @@ function calcHipoNa(){
     rrow('Δ Na⁺ por litro de SSH 3%', fmt(deltaPorLitro,2)+' mEq/L') +
     rrow('Volumen total a infundir', fmt(volMl,0)+' mL') +
     rrow('Na⁺ total en el volumen', fmt(naTotalMeq,0)+' mEq') +
-    (ampNa ? rrow('Ampollas de Soletrol Na ('+fmt(cfg.ampNa,0)+' mEq c/u)', '≈ '+ampNa.enteras+' amp · '+fmt(ampNa.enteras*cfg.mlNa,0)+' mL ('+fmt(ampNa.exacto,1)+' amp)') : '') +
     rrow('Corrección proyectada a 24 h', fmt(correccion24h)+' mEq/L');
+
+  // Preparación de la SSH 3% agregando Soletrol Na a suero fisiológico 0,9%
+  const bagV = parseFloat(getBag1());
+  const Cb = 154, Ct = cfg.sshConc, Ma = cfg.ampNa, Va = cfg.mlNa;   // Cb: Na⁺ del SF 0,9%
+  const denom = 1000*Ma - Ct*Va;
+  const prepEl = document.getElementById('na1-prep');
+  if(bagV && denom>0){
+    const nAmp = Math.max(1, Math.round(bagV*(Ct - Cb)/denom));
+    const volFinal = bagV + Va*nAmp;
+    const naBolsa = Cb*bagV/1000 + Ma*nAmp;
+    const concFinal = naBolsa/(volFinal/1000);   // mEq/L resultantes
+    const pct = concFinal/171.1;                 // % (1% NaCl ≈ 171,1 mEq/L)
+    const duraH = rate>0 ? volFinal/rate : null;
+    const bolsas = Math.ceil(volMl/volFinal);
+    prepEl.innerHTML =
+      rrow('Agregar a la bolsa de '+fmt(bagV,0)+' mL', '≈ '+nAmp+' amp Soletrol Na ('+fmt(nAmp*Va,0)+' mL)') +
+      rrow('Concentración resultante', fmt(concFinal,0)+' mEq/L (~'+fmt(pct,1)+'%)') +
+      rrow('Volumen final de la bolsa', fmt(volFinal,0)+' mL'+(duraH?' · dura ≈ '+fmt(duraH)+' h':'')) +
+      rrow('Bolsas para el total planificado', '≈ '+bolsas);
+  } else { prepEl.innerHTML=''; }
   let a='';
   if(correccion24h>cfg.naHipoDanger){ a += alertHtml('danger','La corrección proyectada supera '+cfg.naHipoDanger+' mEq/L en 24 h. Riesgo de síndrome de desmielinización osmótica. Reduzca la velocidad o el Na⁺ objetivo.'); }
   else if(correccion24h>cfg.naHipoWarn){ a += alertHtml('warning','Corrección entre '+cfg.naHipoWarn+'–'+cfg.naHipoDanger+' mEq/L en 24 h: en el límite superior seguro. Monitorice Na⁺ cada 2–4 h.'); }
