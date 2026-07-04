@@ -145,6 +145,45 @@
 
   footer{margin-top:20px;font-size:11.5px;line-height:1.5;color:var(--ink-soft);padding:0 4px;}
 
+  header{position:relative;}
+  .gear{
+    position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;
+    border:none;cursor:pointer;background:rgba(255,255,255,.18);color:#fff;
+    display:flex;align-items:center;justify-content:center;z-index:3;
+  }
+  header .eyebrow{padding-right:46px;}
+  .gear:active{transform:scale(.94);}
+
+  .overlay{
+    position:fixed;inset:0;background:rgba(15,20,30,.55);z-index:50;
+    display:none;align-items:flex-end;justify-content:center;padding:0;
+  }
+  .overlay.show{display:flex;}
+  .sheet{
+    background:var(--panel);width:100%;max-width:520px;border-radius:24px 24px 0 0;
+    padding:22px 18px calc(22px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;
+    box-shadow:0 -8px 30px rgba(0,0,0,.25);
+  }
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .sheet-head h2{font-size:18px;margin:0;font-weight:800;}
+  .sheet-head .x{border:none;background:#F1EFEA;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;color:var(--ink-soft);}
+  .sheet .sub{font-size:12.5px;color:var(--ink-soft);margin:0 0 16px;line-height:1.4;}
+  .cfg-group{margin-bottom:18px;}
+  .cfg-group h3{
+    font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);
+    font-weight:700;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);
+  }
+  .cfg-actions{display:flex;gap:10px;margin-top:6px;}
+  .btn{flex:1;padding:13px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;}
+  .btn.primary{background:var(--teal);color:#fff;}
+  .btn.ghost{background:#F1EFEA;color:var(--ink-soft);}
+  .saved-toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;
+    background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:13.5px;
+    opacity:0;transition:opacity .2s ease;pointer-events:none;
+  }
+  .saved-toast.show{opacity:1;}
+
   .hidden{display:none;}
 </style>
 </head>
@@ -152,6 +191,9 @@
 <div class="wrap">
 
   <header>
+    <button class="gear" id="open-settings" aria-label="Ajustes de límites">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+    </button>
     <div class="eyebrow">Herramienta interna · Uso clínico de apoyo</div>
     <h1>Corrección de Sodio y Potasio</h1>
     <p>Calcula la velocidad de infusión (mL/h) para reponer electrolitos de forma segura.</p>
@@ -270,8 +312,68 @@
   </footer>
 </div>
 
+<!-- ===== Modal de Ajustes ===== -->
+<div class="overlay" id="settings-overlay">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Ajustes de límites de seguridad">
+    <div class="sheet-head">
+      <h2>Ajustes de límites</h2>
+      <button class="x" id="close-settings" aria-label="Cerrar">×</button>
+    </div>
+    <p class="sub">Adapta los límites de seguridad y las fórmulas a tu protocolo institucional. Los valores se guardan en este dispositivo.</p>
+
+    <div class="cfg-group">
+      <h3>Hiponatremia · corrección de Na⁺ en 24 h</h3>
+      <div class="row2">
+        <label class="field"><span class="lbl">Aviso (ámbar) desde</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-naHipoWarn" step="0.5"><span class="unit">mEq/L</span></div></label>
+        <label class="field"><span class="lbl">Peligro (rojo) desde</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-naHipoDanger" step="0.5"><span class="unit">mEq/L</span></div></label>
+      </div>
+      <label class="field"><span class="lbl">Sodio del SSH 3%</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-sshConc" step="1"><span class="unit">mEq/L</span></div></label>
+    </div>
+
+    <div class="cfg-group">
+      <h3>Hipernatremia · descenso de Na⁺ en 24 h</h3>
+      <div class="row2">
+        <label class="field"><span class="lbl">Aviso (ámbar) desde</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-naHiperWarn" step="0.5"><span class="unit">mEq/L</span></div></label>
+        <label class="field"><span class="lbl">Peligro (rojo) desde</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-naHiperDanger" step="0.5"><span class="unit">mEq/L</span></div></label>
+      </div>
+    </div>
+
+    <div class="cfg-group">
+      <h3>Hipopotasemia · máximos por vía</h3>
+      <div class="row2">
+        <label class="field"><span class="lbl">Periférica · máx. velocidad</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-kPerifRate" step="1"><span class="unit">mEq/h</span></div></label>
+        <label class="field"><span class="lbl">Periférica · máx. concentr.</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-kPerifConc" step="1"><span class="unit">mEq/L</span></div></label>
+      </div>
+      <div class="row2">
+        <label class="field"><span class="lbl">Central · máx. velocidad</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-kCentralRate" step="1"><span class="unit">mEq/h</span></div></label>
+        <label class="field"><span class="lbl">Central · máx. concentr.</span><div class="field-input"><input type="number" inputmode="decimal" id="cfg-kCentralConc" step="1"><span class="unit">mEq/L</span></div></label>
+      </div>
+    </div>
+
+    <div class="cfg-actions">
+      <button class="btn ghost" id="reset-settings">Restaurar</button>
+      <button class="btn primary" id="save-settings">Guardar</button>
+    </div>
+  </div>
+</div>
+<div class="saved-toast" id="saved-toast">Ajustes guardados</div>
+
 <script>
 const ALERT_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>';
+
+// ===== Configuración de límites (persistida en el dispositivo) =====
+const CFG_DEFAULTS = {
+  naHipoWarn:8,  naHipoDanger:10, sshConc:513,
+  naHiperWarn:10, naHiperDanger:12,
+  kPerifRate:10, kPerifConc:40, kCentralRate:20, kCentralConc:80
+};
+const CFG_KEY = 'nak-cfg-v1';
+const CFG_IDS = Object.keys(CFG_DEFAULTS);
+function loadCfg(){
+  try{ return Object.assign({}, CFG_DEFAULTS, JSON.parse(localStorage.getItem(CFG_KEY)||'{}')); }
+  catch(e){ return Object.assign({}, CFG_DEFAULTS); }
+}
+let cfg = loadCfg();
 
 function alertHtml(tone, msg){
   return '<div class="alert '+tone+'">'+ALERT_ICON+'<span>'+msg+'</span></div>';
@@ -330,7 +432,7 @@ function calcHipoNa(){
   }
   const f = factorATC(sexo, mayor65);
   const ACT = P*f;
-  const deltaPorLitro = (513 - Na0)/(ACT+1);
+  const deltaPorLitro = (cfg.sshConc - Na0)/(ACT+1);
   const litros = deltaTotal/deltaPorLitro;
   const volMl = litros*1000;
   const rate = volMl/h;
@@ -345,8 +447,8 @@ function calcHipoNa(){
     rrow('Volumen total a infundir', fmt(volMl,0)+' mL') +
     rrow('Corrección proyectada a 24 h', fmt(correccion24h)+' mEq/L');
   let a='';
-  if(correccion24h>10){ a += alertHtml('danger','La corrección proyectada supera 10 mEq/L en 24 h. Riesgo de síndrome de desmielinización osmótica. Reduzca la velocidad o el Na⁺ objetivo.'); }
-  else if(correccion24h>8){ a += alertHtml('warning','Corrección entre 8–10 mEq/L en 24 h: en el límite superior seguro. Monitorice Na⁺ cada 2–4 h.'); }
+  if(correccion24h>cfg.naHipoDanger){ a += alertHtml('danger','La corrección proyectada supera '+cfg.naHipoDanger+' mEq/L en 24 h. Riesgo de síndrome de desmielinización osmótica. Reduzca la velocidad o el Na⁺ objetivo.'); }
+  else if(correccion24h>cfg.naHipoWarn){ a += alertHtml('warning','Corrección entre '+cfg.naHipoWarn+'–'+cfg.naHipoDanger+' mEq/L en 24 h: en el límite superior seguro. Monitorice Na⁺ cada 2–4 h.'); }
   else { a += alertHtml('warning','Recontrole Na⁺ sérico cada 2–4 h y reajuste la infusión según respuesta real.'); }
   alertsEl.innerHTML = a;
 }
@@ -389,8 +491,8 @@ function calcHiperNa(){
     rrow('Volumen total a infundir', fmt(volMl,0)+' mL') +
     rrow('Descenso proyectado a 24 h', fmt(correccion24h)+' mEq/L');
   let a='';
-  if(correccion24h>12){ a += alertHtml('danger','El descenso proyectado supera 12 mEq/L en 24 h. Riesgo de edema cerebral. Prolongue el tiempo de infusión.'); }
-  else if(correccion24h>10){ a += alertHtml('warning','Descenso entre 10–12 mEq/L en 24 h: en el límite superior seguro. Monitorice Na⁺ cada 4–6 h.'); }
+  if(correccion24h>cfg.naHiperDanger){ a += alertHtml('danger','El descenso proyectado supera '+cfg.naHiperDanger+' mEq/L en 24 h. Riesgo de edema cerebral. Prolongue el tiempo de infusión.'); }
+  else if(correccion24h>cfg.naHiperWarn){ a += alertHtml('warning','Descenso entre '+cfg.naHiperWarn+'–'+cfg.naHiperDanger+' mEq/L en 24 h: en el límite superior seguro. Monitorice Na⁺ cada 4–6 h.'); }
   else { a += alertHtml('warning','No incluye pérdidas insensibles ni diuresis osmótica en curso; ajuste con Na⁺ seriado.'); }
   alertsEl.innerHTML = a;
 }
@@ -409,7 +511,9 @@ function calcHipoK(){
   const alertsEl = document.getElementById('k1-alerts');
   const goalEl = document.getElementById('k1-goal');
   const limiteEl = document.getElementById('k1-limite');
-  const limites = ruta==='periferica' ? {maxRate:10,maxConc:40} : {maxRate:20,maxConc:80};
+  const limites = ruta==='periferica'
+    ? {maxRate:cfg.kPerifRate, maxConc:cfg.kPerifConc}
+    : {maxRate:cfg.kCentralRate, maxConc:cfg.kCentralConc};
   limiteEl.textContent = 'Límite para vía '+(ruta==='periferica'?'periférica':'central')+': máx. '+limites.maxRate+' mEq/h · máx. '+limites.maxConc+' mEq/L';
   const deltaK = (K0 && Kobj) ? (Kobj - K0) : null;   // cuánto hay que subir
   goalEl.innerHTML = (deltaK!=null && deltaK>0) ? goalHtml('Corregir K⁺', signed(deltaK,1)+' mEq/L') : '';
@@ -439,6 +543,30 @@ function calcHipoK(){
 
 // initial compute
 calcHipoNa(); calcHiperNa(); calcHipoK();
+
+// ===== Ajustes: apertura, carga, guardado =====
+function recomputeAll(){ calcHipoNa(); calcHiperNa(); calcHipoK(); }
+function fillSettingsForm(){ CFG_IDS.forEach(k=>{ const el=document.getElementById('cfg-'+k); if(el) el.value=cfg[k]; }); }
+const _overlay = document.getElementById('settings-overlay');
+function openSettings(){ fillSettingsForm(); _overlay.classList.add('show'); }
+function closeSettings(){ _overlay.classList.remove('show'); }
+document.getElementById('open-settings').addEventListener('click', openSettings);
+document.getElementById('close-settings').addEventListener('click', closeSettings);
+_overlay.addEventListener('click', e=>{ if(e.target===_overlay) closeSettings(); });
+let _toastTimer;
+function toast(msg){ const t=document.getElementById('saved-toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(_toastTimer); _toastTimer=setTimeout(()=>t.classList.remove('show'),1600); }
+document.getElementById('save-settings').addEventListener('click', ()=>{
+  const next=Object.assign({}, cfg);
+  CFG_IDS.forEach(k=>{ const v=parseFloat(document.getElementById('cfg-'+k).value); if(Number.isFinite(v)) next[k]=v; });
+  cfg=next;
+  try{ localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); }catch(e){}
+  recomputeAll(); closeSettings(); toast('Ajustes guardados');
+});
+document.getElementById('reset-settings').addEventListener('click', ()=>{
+  cfg=Object.assign({}, CFG_DEFAULTS);
+  try{ localStorage.removeItem(CFG_KEY); }catch(e){}
+  fillSettingsForm(); recomputeAll(); toast('Valores por defecto restaurados');
+});
 
 // ---- PWA service worker ----
 if('serviceWorker' in navigator){
